@@ -25,7 +25,10 @@ i:2--------binaryResult: 10 i:4--------binaryResult: 100 i:8--------binaryResult
       <pubDate>Mon, 12 Jul 2021 12:38:58 +0800</pubDate>
       
       <guid>https://riluoyihao.github.io/post/my-first-post/</guid>
-      <description>第一篇测试 标题  第一条 第二条  </description>
+      <description>第一篇测试 标题   第一条
+  第二条
+以下是图片
+  </description>
     </item>
     
   </channel>
