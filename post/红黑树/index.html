@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> 红黑树 | wdl&#39;s blog</title>
+  <link rel = 'canonical' href = 'https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/'>
+  <meta name="description" content="Java学习笔记">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="红黑树" />
+<meta property="og:description" content="红黑树 红黑树的特性  每个节点，要么是红色，要么是黑色。 根节点是黑色。 每个叶子节(NIL)点是黑色。 每个红色节点的两个子节点一定是黑色。 不能有两个红色节点相连。任意一节点到每个叶子节点的路径都包含数量相同的黑色节点。也就是黑高。  由此可以推出：如果一个节点存在黑子节点，那么该节点一定有两个子节点。    红黑树的自平衡 红黑树的自平衡依赖三种操作：变色、左旋、右旋。
+ 变色：节点的颜色由黑变红或者由红变黑。 左旋：以某个节点作为支点（旋转节点），其右子节点变为旋转节点的父节点，右子节点的左子节点变为旋转节点的右子节点，左子节点保持不变。 右旋：以某个节点作为支点（旋转节点），其左子节点变为旋转节点的父节点，左子节点的右子节点变为旋转节点的左子节点，右子节点保持不变。  左旋图示
+右旋图示
+红黑树的查找： 红黑树本身就是平衡二叉树的一种，与二叉搜索树的查找是一模一样的。
+红黑树的插入： 插入操作包括两部分工作：
+ 查找插入的位置。 插入后自平衡。  注意：插入节点，必须为红色。理由很简单：红色在父节点（如果存在）为黑色节点时，红黑树的黑色平衡没被破坏，不需要做自平衡操作。
+但如果插入节点为黑色，那么插入位置所在的子树黑色节点总是多1，必须做自平衡。
+红黑树插入节点情景分析  红黑树为空树  最简单的一种情景，直接把插入节点作为根节点就行。
+根据红黑树性质2：根节点必须为黑色。还需要把插入节点改为黑色。
+ 插入节点的key已经存在  更新当前节点的值为插入节点的值。
+ 插入节点的父节点为黑色节点  由于插入的节点的颜色是红色的，当插入节点的父节点为黑色时，并不会影响红黑树的平衡，直接插入即可，无需做自平衡。
+ 插入节点的父节点为红色  再次回想下红黑树的性质2：根节点是黑色。如果插入节点的父节点为红色，那么该父节点一定不是根节点，所以插入节点总是存在祖父节点。
+这一点很关键，因为后续的旋转操作肯定需要祖父节点的参与。
+我们这里约定下，把当前节点称为 I 节点。把其父节点称为P节点。把其叔叔节点称为U节点。把其祖父节点称为PP节点。
+   叔叔节点存在并且为红节点    依据红黑树性质4可知：红色节点不能相连 ==&gt; 祖父节点一定为黑色节点。
+因为不可以同时存在两个相连的红节点，那么此时该插入子树的红黑层数的情况就是：黑红红。
+显然最简单的处理方式是把其改为：红黑红。
+所以处理方式是：
+  将P和U节点改为黑色。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-07-14T22:34:51&#43;08:00" />
+<meta property="article:modified_time" content="2021-07-14T22:34:51&#43;08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="红黑树"/>
+<meta name="twitter:description" content="红黑树 红黑树的特性  每个节点，要么是红色，要么是黑色。 根节点是黑色。 每个叶子节(NIL)点是黑色。 每个红色节点的两个子节点一定是黑色。 不能有两个红色节点相连。任意一节点到每个叶子节点的路径都包含数量相同的黑色节点。也就是黑高。  由此可以推出：如果一个节点存在黑子节点，那么该节点一定有两个子节点。    红黑树的自平衡 红黑树的自平衡依赖三种操作：变色、左旋、右旋。
+ 变色：节点的颜色由黑变红或者由红变黑。 左旋：以某个节点作为支点（旋转节点），其右子节点变为旋转节点的父节点，右子节点的左子节点变为旋转节点的右子节点，左子节点保持不变。 右旋：以某个节点作为支点（旋转节点），其左子节点变为旋转节点的父节点，左子节点的右子节点变为旋转节点的左子节点，右子节点保持不变。  左旋图示
+右旋图示
+红黑树的查找： 红黑树本身就是平衡二叉树的一种，与二叉搜索树的查找是一模一样的。
+红黑树的插入： 插入操作包括两部分工作：
+ 查找插入的位置。 插入后自平衡。  注意：插入节点，必须为红色。理由很简单：红色在父节点（如果存在）为黑色节点时，红黑树的黑色平衡没被破坏，不需要做自平衡操作。
+但如果插入节点为黑色，那么插入位置所在的子树黑色节点总是多1，必须做自平衡。
+红黑树插入节点情景分析  红黑树为空树  最简单的一种情景，直接把插入节点作为根节点就行。
+根据红黑树性质2：根节点必须为黑色。还需要把插入节点改为黑色。
+ 插入节点的key已经存在  更新当前节点的值为插入节点的值。
+ 插入节点的父节点为黑色节点  由于插入的节点的颜色是红色的，当插入节点的父节点为黑色时，并不会影响红黑树的平衡，直接插入即可，无需做自平衡。
+ 插入节点的父节点为红色  再次回想下红黑树的性质2：根节点是黑色。如果插入节点的父节点为红色，那么该父节点一定不是根节点，所以插入节点总是存在祖父节点。
+这一点很关键，因为后续的旋转操作肯定需要祖父节点的参与。
+我们这里约定下，把当前节点称为 I 节点。把其父节点称为P节点。把其叔叔节点称为U节点。把其祖父节点称为PP节点。
+   叔叔节点存在并且为红节点    依据红黑树性质4可知：红色节点不能相连 ==&gt; 祖父节点一定为黑色节点。
+因为不可以同时存在两个相连的红节点，那么此时该插入子树的红黑层数的情况就是：黑红红。
+显然最简单的处理方式是把其改为：红黑红。
+所以处理方式是：
+  将P和U节点改为黑色。"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://riluoyihao.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="https://riluoyihao.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="https://riluoyihao.github.io/">
+  
+    <div id="logo" style="background-image: url(https://riluoyihao.github.io/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>wdl&#39;s blog</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/posts">Writings</a></li>
+      
+        <li><a href="/tags">Tags</a></li>
+      
+        <li><a href="/about">About</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <h1 id="红黑树">红黑树</h1>
+<h3 id="红黑树的特性红黑树图一images红黑树红黑树图一jpg">红黑树的特性<img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E7%BA%A2%E9%BB%91%E6%A0%91%E5%9B%BE%E4%B8%80.jpg" alt="红黑树图一"></h3>
+<ol>
+<li>每个节点，要么是红色，要么是黑色。</li>
+<li>根节点是黑色。</li>
+<li>每个叶子节(NIL)点是黑色。</li>
+<li>每个红色节点的两个子节点一定是黑色。</li>
+<li>不能有两个红色节点相连。任意一节点到每个叶子节点的路径都包含数量相同的黑色节点。也就是黑高。
+<ol>
+<li>由此可以推出：如果一个节点存在黑子节点，那么该节点一定有两个子节点。</li>
+</ol>
+</li>
+</ol>
+<h3 id="红黑树的自平衡">红黑树的自平衡</h3>
+<p>红黑树的自平衡依赖三种操作：<strong>变色、左旋、右旋</strong>。</p>
+<ul>
+<li><strong>变色</strong>：节点的颜色由黑变红或者由红变黑。</li>
+<li><strong>左旋</strong>：以某个节点作为支点（旋转节点），其右子节点变为旋转节点的父节点，右子节点的左子节点变为旋转节点的右子节点，左子节点保持不变。</li>
+<li><strong>右旋</strong>：以某个节点作为支点（旋转节点），其左子节点变为旋转节点的父节点，左子节点的右子节点变为旋转节点的左子节点，右子节点保持不变。</li>
+</ul>
+<p>左旋图示</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/181626273846_.pic.jpg" alt="181626273846_.pic"></p>
+<p>右旋图示</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/191626273847_.pic_hd.jpg" alt="191626273847_.pic_hd"></p>
+<h3 id="红黑树的查找">红黑树的查找：</h3>
+<p>红黑树本身就是平衡二叉树的一种，与二叉搜索树的查找是一模一样的。</p>
+<h3 id="红黑树的插入">红黑树的插入：</h3>
+<p>插入操作包括两部分工作：</p>
+<ol>
+<li>查找插入的位置。</li>
+<li>插入后自平衡。</li>
+</ol>
+<p><strong>注意</strong>：插入节点，必须为红色。理由很简单：红色在父节点（如果存在）为黑色节点时，红黑树的黑色平衡没被破坏，不需要做自平衡操作。</p>
+<p>但如果插入节点为黑色，那么插入位置所在的子树黑色节点总是多1，必须做自平衡。</p>
+<h4 id="红黑树插入节点情景分析">红黑树插入节点情景分析</h4>
+<ul>
+<li><strong>红黑树为空树</strong></li>
+</ul>
+<p>最简单的一种情景，直接把插入节点作为根节点就行。</p>
+<p>根据红黑树性质2：根节点必须为黑色。还需要把插入节点改为黑色。</p>
+<ul>
+<li><strong>插入节点的key已经存在</strong></li>
+</ul>
+<p>更新当前节点的值为插入节点的值。</p>
+<ul>
+<li><strong>插入节点的父节点为黑色节点</strong></li>
+</ul>
+<p>由于插入的节点的颜色是红色的，当插入节点的父节点为黑色时，并不会影响红黑树的平衡，直接插入即可，无需做自平衡。</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/201626273848_.pic.jpg" alt="201626273848_.pic"></p>
+<ul>
+<li><strong>插入节点的父节点为红色</strong></li>
+</ul>
+<p>再次回想下红黑树的性质2：根节点是黑色。如果插入节点的父节点为红色，那么该父节点一定不是根节点，所以插入节点总是存在祖父节点。</p>
+<p>这一点很关键，因为后续的旋转操作肯定需要祖父节点的参与。</p>
+<p><strong>我们这里约定下，把当前节点称为 I 节点。把其父节点称为P节点。把其叔叔节点称为U节点。把其祖父节点称为PP节点。</strong></p>
+<ul>
+<li>
+<ul>
+<li><strong>叔叔节点存在并且为红节点</strong></li>
+</ul>
+</li>
+</ul>
+<p>依据红黑树性质4可知：红色节点不能相连 ==&gt; 祖父节点一定为黑色节点。</p>
+<p>因为不可以同时存在两个相连的红节点，那么此时该插入子树的红黑层数的情况就是：黑红红。</p>
+<p>显然最简单的处理方式是把其改为：红黑红。</p>
+<p>所以处理方式是：</p>
+<ol>
+<li>
+<p>将P和U节点改为黑色。</p>
+</li>
+<li>
+<p>把PP改为红色。</p>
+</li>
+<li>
+<p>把PP设置为当前节点，进行后续操作。</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/211626273848_.pic.jpg" alt="211626273848_.pic"></p>
+<p>可以看到，我们把PP节点设为红色了，如果PP节点的父节点是黑色，那么无需再做任何处理。但如果PP节点的父节点为红色，则又违反红黑树的性质4了。所以需要把PP节点设置为当前节点，继续做插入操作自平衡处理，直至平衡为止。</p>
+</li>
+</ol>
+<ul>
+<li>
+<ul>
+<li>
+<p><strong>叔叔节点不存在或者为黑色节点，并且插入节点的父亲节点为祖父节点的左子节点。</strong></p>
+<p>注意：单纯从插入前来看，叔叔节点非红即空（NIL节点），否则的话破坏了红黑树的性质5，此路径会比其它路径多一个黑色节点。</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/221626273849_.pic.jpg" alt="221626273849_.pic"></p>
+<ul>
+<li>
+<p><strong>新插入节点为其父节点的左子节点（LL红色情况）</strong></p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/231626273849_.pic.jpg" alt="231626273849_.pic"></p>
+<ul>
+<li>
+<ul>
+<li>
+<p><strong>处理</strong>：</p>
+</li>
+<li>
+<ol>
+<li>
+<p>变颜色：将P设置为黑色，将PP设置为红色。</p>
+</li>
+<li>
+<p>对PP节点进行右旋。</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/241626273849_.pic.jpg" alt="241626273849_.pic"></p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>新插入节点为其父节点的右子节点（LR红色情况）</p>
+</li>
+</ul>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/251626273850_.pic.jpg" alt="251626273850_.pic"></p>
+<ul>
+<li>
+<ul>
+<li>
+<p><strong>处理</strong>：</p>
+</li>
+<li>
+<ol>
+<li>
+<p>将P进行左旋。</p>
+</li>
+<li>
+<p>将P设置为当前节点，得到LL红色情况。</p>
+</li>
+<li>
+<p>按照LL红色情况处理。（1变色。2右旋PP）</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/261626273850_.pic.jpg" alt="261626273850_.pic"></p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>
+<p>叔叔节点不存在或者为黑色节点，并且插入节点的父亲节点为祖父节点的右子节点。</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/271626273855_.pic.jpg" alt="271626273855_.pic"></p>
+<ul>
+<li>
+<p>新插入节点为其父节点的右子节点（RR红色情况）</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/281626273856_.pic.jpg" alt="281626273856_.pic"></p>
+<ul>
+<li>
+<p><strong>处理</strong>：</p>
+</li>
+<li>
+<ol>
+<li>
+<p>变颜色：将P设置为黑色，将PP设置为红色。</p>
+</li>
+<li>
+<p>对PP节点进行左旋。</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/291626273856_.pic.jpg" alt="291626273856_.pic"></p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p>新插入节点为其父节点的左子节点（RL红色情况）</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/301626273856_.pic.jpg" alt="301626273856_.pic"></p>
+<ul>
+<li>
+<p><strong>处理</strong>：</p>
+</li>
+<li>
+<ol>
+<li>
+<p>将P进行右旋。</p>
+</li>
+<li>
+<p>将P设置为当前节点，得到RR红色情况。</p>
+</li>
+<li>
+<p>按照RR红色情况处理。（1变色。2左旋PP）</p>
+<p><img src="../../images/%E7%BA%A2%E9%BB%91%E6%A0%91/311626273857_.pic_hd.jpg" alt="311626273857_.pic_hd"></p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="java代码实现红黑树">java代码实现红黑树</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1</span><span style="color:#ff79c6">package</span> com.wdl.util<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3</span><span style="color:#ff79c6">import</span> lombok.Data<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4</span><span style="color:#ff79c6">import</span> lombok.extern.slf4j.Slf4j<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6</span><span style="color:#6272a4">/**
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7</span><span style="color:#6272a4"> * @Author: wdl
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8</span><span style="color:#6272a4"> * @Description: 红黑树（缺少删除逻辑）
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9</span><span style="color:#6272a4"> * @Date: 2020/11/23 9:22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10</span><span style="color:#6272a4"> */</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11</span>@Slf4j
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12</span>@Data
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13</span><span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd;font-style:italic">class</span> <span style="color:#50fa7b">RBTree</span><span style="color:#ff79c6">&lt;</span>K <span style="color:#8be9fd;font-style:italic">extends</span> Comparable<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">&gt;,</span> V<span style="color:#ff79c6">&gt;</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14</span>    <span style="color:#8be9fd;font-style:italic">private</span> <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#8be9fd;font-style:italic">final</span> <span style="color:#8be9fd">boolean</span> RED <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15</span>    <span style="color:#8be9fd;font-style:italic">private</span> <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#8be9fd;font-style:italic">final</span> <span style="color:#8be9fd">boolean</span> BLACK <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17</span>    <span style="color:#6272a4">/**
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18</span><span style="color:#6272a4">     * 根节点
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19</span><span style="color:#6272a4">     */</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20</span>    <span style="color:#8be9fd;font-style:italic">private</span> RBNode root<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22</span>    <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">insert</span><span style="color:#ff79c6">(</span>K key<span style="color:#ff79c6">,</span> V value<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23</span>        RBNode node <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> RBNode<span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24</span>        node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>RED<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25</span>        node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setKey</span><span style="color:#ff79c6">(</span>key<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26</span>        node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setValue</span><span style="color:#ff79c6">(</span>value<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27</span>        insert<span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30</span>    <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">insert</span><span style="color:#ff79c6">(</span>RBNode node<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31</span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32</span>          node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33</span>          <span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span> <span style="color:#ff79c6">=</span> node<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34</span>          <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37</span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">equals</span><span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">()))</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38</span>            <span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">setValue</span><span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getValue</span><span style="color:#ff79c6">());</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39</span>            <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42</span>        RBNode parent <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43</span>        RBNode next <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRoot</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44</span>        <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> next<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45</span>            parent <span style="color:#ff79c6">=</span> next<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47</span>            <span style="color:#8be9fd">int</span> compare <span style="color:#ff79c6">=</span> node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">compareTo</span><span style="color:#ff79c6">(</span>parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">());</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48</span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>compare <span style="color:#ff79c6">&gt;</span> 0<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49</span>                next <span style="color:#ff79c6">=</span> parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRight</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50</span>            <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>compare <span style="color:#ff79c6">&lt;</span> 0<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51</span>                next <span style="color:#ff79c6">=</span> parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52</span>            <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53</span>                parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setValue</span><span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getValue</span><span style="color:#ff79c6">());</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54</span>                <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55</span>            <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58</span>        <span style="color:#8be9fd">int</span> compare <span style="color:#ff79c6">=</span> node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">compareTo</span><span style="color:#ff79c6">(</span>parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">());</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59</span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>compare <span style="color:#ff79c6">&gt;</span> 0<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60</span>            parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setRight</span><span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61</span>        <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62</span>            parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setLeft</span><span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64</span>        node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span>parent<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66</span>        insertFixup<span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69</span>    <span style="color:#8be9fd;font-style:italic">private</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">insertFixup</span><span style="color:#ff79c6">(</span>RBNode node<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70</span>        <span style="color:#6272a4">// 这一步一定要加上，否则会出现错误。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72</span>        RBNode pNode <span style="color:#ff79c6">=</span> node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">parent</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73</span>        <span style="color:#6272a4">// 父节点为黑色，插入时不影响红黑树的平衡，不需要做任何处理。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>pNode <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">null</span> <span style="color:#ff79c6">||</span> pNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">isBlack</span><span style="color:#ff79c6">())</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75</span>            <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78</span>        <span style="color:#6272a4">// 剩下的情况就是父节点为红色的时候的情况，又分为几种情况
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79</span><span style="color:#6272a4"></span>        <span style="color:#6272a4">// 父节点为红色，祖父节点一定存在，因为根节点不可能为红色。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80</span><span style="color:#6272a4"></span>        RBNode ppNode <span style="color:#ff79c6">=</span> pNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getParent</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81</span>        RBNode uNode<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82</span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>ppNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">==</span> pNode<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83</span>            <span style="color:#6272a4">// 父节点为其祖父节点的左子节点。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84</span><span style="color:#6272a4"></span>            uNode <span style="color:#ff79c6">=</span> ppNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRight</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85</span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">==</span> uNode <span style="color:#ff79c6">||</span> uNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">isBlack</span><span style="color:#ff79c6">())</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86</span>                <span style="color:#6272a4">// 叔叔节点不存在或者为黑色节点，并且插入节点的父亲节点为祖父节点的左子节点。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87</span><span style="color:#6272a4"></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88</span>                <span style="color:#6272a4">// 如果新插入节点是其父节点的左子节点（LL红色情况）
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89</span><span style="color:#6272a4"></span>                <span style="color:#6272a4">// 变颜色：将P设置为黑色，将PP设置为红色。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90</span><span style="color:#6272a4"></span>                <span style="color:#6272a4">// 对PP节点进行右旋。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91</span><span style="color:#6272a4"></span>                <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>pNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">==</span> node<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92</span>                    pNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93</span>                    ppNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>RED<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94</span>                    rightRotate<span style="color:#ff79c6">(</span>ppNode<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95</span>                    <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96</span>                <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97</span>                    <span style="color:#6272a4">// 新插入节点为其父节点的右子节点（LR红色情况）
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 将P进行左旋。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 将P设置为当前节点，得到LL红色情况。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 按照LL红色情况处理。（1变色。2右旋PP）
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101</span><span style="color:#6272a4"></span>                    leftRotate<span style="color:#ff79c6">(</span>pNode<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102</span>                    insertFixup<span style="color:#ff79c6">(</span>pNode<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103</span>                    <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104</span>                <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105</span>            <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106</span>        <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107</span>            <span style="color:#6272a4">// 父节点为其祖父节点的右子节点。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108</span><span style="color:#6272a4"></span>            uNode <span style="color:#ff79c6">=</span> ppNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109</span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">==</span> uNode <span style="color:#ff79c6">||</span> uNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">isBlack</span><span style="color:#ff79c6">())</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110</span>                <span style="color:#6272a4">// 叔叔节点不存在或者为黑色节点，并且插入节点的父亲节点为祖父节点的右子节点。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111</span><span style="color:#6272a4"></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112</span>                <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>pNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRight</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">==</span> node<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113</span>                    <span style="color:#6272a4">// 新插入节点为其父节点的右子节点（RR红色情况）
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 变颜色：将P设置为黑色，将PP设置为红色。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 对PP节点进行左旋。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116</span><span style="color:#6272a4"></span>                    pNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117</span>                    ppNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>RED<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118</span>                    leftRotate<span style="color:#ff79c6">(</span>ppNode<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119</span>                    <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120</span>                <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121</span>                    <span style="color:#6272a4">// 新插入节点为其父节点的左子节点（RL红色情况）
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 将P进行右旋。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 将P设置为当前节点，得到RR红色情况。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124</span><span style="color:#6272a4"></span>                    <span style="color:#6272a4">// 按照RR红色情况处理。（1变色。2左旋PP）
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125</span><span style="color:#6272a4"></span>                    rightRotate<span style="color:#ff79c6">(</span>pNode<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126</span>                    insertFixup<span style="color:#ff79c6">(</span>pNode<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127</span>                    <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128</span>                <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129</span>            <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132</span>        <span style="color:#6272a4">// 叔叔节点存在并且为红节点
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> uNode <span style="color:#ff79c6">&amp;&amp;</span> uNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">isRed</span><span style="color:#ff79c6">())</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134</span>            <span style="color:#6272a4">// 将P和U节点改为黑色。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135</span><span style="color:#6272a4"></span>            <span style="color:#6272a4">// 把PP改为红色。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136</span><span style="color:#6272a4"></span>            <span style="color:#6272a4">// 把PP设置为当前节点，进行后续操作。因为祖父节点的父节点为红色，违反红黑树红色节点不能相连的性质，需要接着处理。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137</span><span style="color:#6272a4"></span>            pNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138</span>            uNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139</span>            ppNode<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>RED<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140</span>            insertFixup<span style="color:#ff79c6">(</span>ppNode<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142</span>            <span style="color:#ff79c6">return</span><span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146</span>    <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">inOrderPrint</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147</span>        inOrderPrint<span style="color:#ff79c6">(</span><span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span><span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150</span>    <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">inOrderPrint</span><span style="color:#ff79c6">(</span>RBNode node<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151</span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> node<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">152</span>            inOrderPrint<span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">left</span><span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">153</span>            log<span style="color:#ff79c6">.</span><span style="color:#50fa7b">info</span><span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;key:{}, value:{}, color:{}&#34;</span><span style="color:#ff79c6">,</span> node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">(),</span> node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getValue</span><span style="color:#ff79c6">(),</span> node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">color</span> <span style="color:#ff79c6">==</span> RED <span style="color:#ff79c6">?</span> <span style="color:#f1fa8c">&#34;red&#34;</span><span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;black&#34;</span><span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">154</span>            inOrderPrint<span style="color:#ff79c6">(</span>node<span style="color:#ff79c6">.</span><span style="color:#50fa7b">right</span><span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">155</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">156</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">157</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">158</span>    <span style="color:#6272a4">/**
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">159</span><span style="color:#6272a4">     *         p                          v
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">160</span><span style="color:#6272a4">     *       /   \                       /  \
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">161</span><span style="color:#6272a4">     *      f     v           ===&gt;      p    x
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">162</span><span style="color:#6272a4">     *           /  \                 /  \
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">163</span><span style="color:#6272a4">     *          r    x               f    r
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">164</span><span style="color:#6272a4">     */</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">165</span>    <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">leftRotate</span><span style="color:#ff79c6">(</span>RBNode p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">166</span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">167</span>            RBNode parent <span style="color:#ff79c6">=</span> p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getParent</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">168</span>            RBNode v <span style="color:#ff79c6">=</span> p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRight</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">169</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">170</span>            p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setRight</span><span style="color:#ff79c6">(</span>v<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">());</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">171</span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> v<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">())</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">172</span>                v<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span>p<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">173</span>            <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">174</span>            p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span>v<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">175</span>            v<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setLeft</span><span style="color:#ff79c6">(</span>p<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">176</span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> parent<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">177</span>                v<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span>parent<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">178</span>                <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">==</span> p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">179</span>                    parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setLeft</span><span style="color:#ff79c6">(</span>v<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">180</span>                <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">181</span>                    parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setRight</span><span style="color:#ff79c6">(</span>v<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">182</span>                <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">183</span>            <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">184</span>                v<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span><span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">185</span>                <span style="color:#6272a4">// 根节点必须为黑色，这个非常重要。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">186</span><span style="color:#6272a4"></span>                v<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">187</span>                <span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span> <span style="color:#ff79c6">=</span> v<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">188</span>            <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">189</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">190</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">191</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">192</span>    <span style="color:#6272a4">/**
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">193</span><span style="color:#6272a4">     *         p                          f
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">194</span><span style="color:#6272a4">     *       /   \                       /  \
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">195</span><span style="color:#6272a4">     *      f     v           ===&gt;      r    p
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">196</span><span style="color:#6272a4">     *    /  \                              /  \
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">197</span><span style="color:#6272a4">     *   r    x                            x    v
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">198</span><span style="color:#6272a4">     */</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">199</span>    <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">rightRotate</span><span style="color:#ff79c6">(</span>RBNode p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">200</span>        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">201</span>            RBNode parent <span style="color:#ff79c6">=</span> p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getParent</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">202</span>            RBNode f <span style="color:#ff79c6">=</span> p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">();</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">203</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">204</span>            p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setLeft</span><span style="color:#ff79c6">(</span>f<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRight</span><span style="color:#ff79c6">());</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">205</span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>f<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRight</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">206</span>                f<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRight</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span>p<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">207</span>            <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">208</span>            p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span>f<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">209</span>            f<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setRight</span><span style="color:#ff79c6">(</span>p<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">210</span>            <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span> <span style="color:#ff79c6">!=</span> parent<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">211</span>                f<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span>parent<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">212</span>                <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getLeft</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">==</span> p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">213</span>                    parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setLeft</span><span style="color:#ff79c6">(</span>f<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">214</span>                <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">215</span>                    parent<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setRight</span><span style="color:#ff79c6">(</span>f<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">216</span>                <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">217</span>            <span style="color:#ff79c6">}</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">218</span>                f<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setParent</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">null</span><span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">219</span>                <span style="color:#6272a4">// 根节点必须为黑色，这个非常重要。
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">220</span><span style="color:#6272a4"></span>                f<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setColor</span><span style="color:#ff79c6">(</span>BLACK<span style="color:#ff79c6">);</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">221</span>                <span style="color:#ff79c6">this</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">root</span> <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">222</span>            <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">223</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">224</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">225</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">226</span>    @Data
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">227</span>    <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#8be9fd;font-style:italic">class</span> <span style="color:#50fa7b">RBNode</span><span style="color:#ff79c6">&lt;</span>K <span style="color:#8be9fd;font-style:italic">extends</span> Comparable<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">&gt;,</span> V<span style="color:#ff79c6">&gt;</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">228</span>        <span style="color:#8be9fd;font-style:italic">private</span> RBNode parent<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">229</span>        <span style="color:#8be9fd;font-style:italic">private</span> RBNode left<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">230</span>        <span style="color:#8be9fd;font-style:italic">private</span> RBNode right<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">231</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">232</span>        <span style="color:#8be9fd;font-style:italic">private</span> <span style="color:#8be9fd">boolean</span> color<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">233</span>        <span style="color:#8be9fd;font-style:italic">private</span> K key<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">234</span>        <span style="color:#8be9fd;font-style:italic">private</span> V value<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">235</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">236</span>        <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">boolean</span> <span style="color:#50fa7b">isRed</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">237</span>            <span style="color:#ff79c6">return</span> color <span style="color:#ff79c6">==</span> RED<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">238</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">239</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">240</span>        <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">boolean</span> <span style="color:#50fa7b">isBlack</span><span style="color:#ff79c6">()</span> <span style="color:#ff79c6">{</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">241</span>            <span style="color:#ff79c6">return</span> color <span style="color:#ff79c6">==</span> BLACK<span style="color:#ff79c6">;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">242</span>        <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">243</span>    <span style="color:#ff79c6">}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">244</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">245</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">246</span><span style="color:#ff79c6">}</span>
+</code></pre></div><p>参考资料：<a href="https://www.bilibili.com/video/BV1UJ411J7CU?p=3">小刘老师详解红黑树</a></p>
+
+  
+  </div>
+</article>
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  You 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Writings</a></li>
+         
+        <li><a href="/tags">Tags</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>
