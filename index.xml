@@ -58,5 +58,15 @@ i:2--------binaryResult: 10 i:4--------binaryResult: 100 i:8--------binaryResult
   </description>
     </item>
     
+    <item>
+      <title></title>
+      <link>https://riluoyihao.github.io/post/hashmap1.7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://riluoyihao.github.io/post/hashmap1.7/</guid>
+      <description>title: &amp;ldquo;HashMap1&amp;rdquo; date: 2021-08-01T20:02:31+08:00 draft: true
+HashMap 1.7 1. 初始化 1.1 主要是几个属性： 1static final int DEFAULT_INITIAL_CAPACITY = 1 &amp;lt;&amp;lt; 4; // 默认的初始化容量，值为 2^4 也就是16 2static final int MAXIMUM_CAPACITY = 1 &amp;lt;&amp;lt; 30; // 最大容量 2^30 也就是1073741824 3static final float DEFAULT_LOAD_FACTOR = 0.75f; // 默认负载因子 4static final Entry&amp;lt;?,?&amp;gt;[] EMPTY_TABLE = {}; // 空的entry数组 5transient Entry&amp;lt;K,V&amp;gt;[] table = (Entry&amp;lt;K,V&amp;gt;[]) EMPTY_TABLE; // 扩容需要的entry数组，长度必须是2的整数次幂，原因会在后面讲 6transient int size; // map中所有的键值对数量，注意不是entry数组的元素个数 7transient int modCount; // 修改次数，后续会详细说 8static final int ALTERNATIVE_HASHING_THRESHOLD_DEFAULT = Integer.</description>
+    </item>
+    
   </channel>
 </rss>
