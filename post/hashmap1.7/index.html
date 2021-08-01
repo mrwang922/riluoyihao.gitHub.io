@@ -7,13 +7,13 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> HashMap1 | wdl&#39;s blog</title>
+  <title> HashMap1.7 | wdl&#39;s blog</title>
   <link rel = 'canonical' href = 'https://riluoyihao.github.io/post/hashmap1.7/'>
   <meta name="description" content="Java学习笔记">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="HashMap1" />
+  <meta property="og:title" content="HashMap1.7" />
 <meta property="og:description" content="HashMap 1.7 1. 初始化 1.1 主要是几个属性： 1static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // 默认的初始化容量，值为 2^4 也就是16 2static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30; // 最大容量 2^30 也就是1073741824 3static final float DEFAULT_LOAD_FACTOR = 0.75f; // 默认负载因子 4static final Entry&lt;?,?&gt;[] EMPTY_TABLE = {}; // 空的entry数组 5transient Entry&lt;K,V&gt;[] table = (Entry&lt;K,V&gt;[]) EMPTY_TABLE; // 扩容需要的entry数组，长度必须是2的整数次幂，原因会在后面讲 6transient int size; // map中所有的键值对数量，注意不是entry数组的元素个数 7transient int modCount; // 修改次数，后续会详细说 8static final int ALTERNATIVE_HASHING_THRESHOLD_DEFAULT = Integer.MAX_VALUE; // 大意是说是一个默认的阈值，当一个键值对的键是String类型时，且map的容量达到了这个阈值，就启用备用哈希（alternative hashing）。备用哈希可以减少String类型的key计算哈希码（更容易）发生哈希碰撞的发生率。该值可以通过定义系统属性jdk." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://riluoyihao.github.io/post/hashmap1.7/" /><meta property="article:section" content="post" />
@@ -22,7 +22,7 @@
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="HashMap1"/>
+<meta name="twitter:title" content="HashMap1.7"/>
 <meta name="twitter:description" content="HashMap 1.7 1. 初始化 1.1 主要是几个属性： 1static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // 默认的初始化容量，值为 2^4 也就是16 2static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30; // 最大容量 2^30 也就是1073741824 3static final float DEFAULT_LOAD_FACTOR = 0.75f; // 默认负载因子 4static final Entry&lt;?,?&gt;[] EMPTY_TABLE = {}; // 空的entry数组 5transient Entry&lt;K,V&gt;[] table = (Entry&lt;K,V&gt;[]) EMPTY_TABLE; // 扩容需要的entry数组，长度必须是2的整数次幂，原因会在后面讲 6transient int size; // map中所有的键值对数量，注意不是entry数组的元素个数 7transient int modCount; // 修改次数，后续会详细说 8static final int ALTERNATIVE_HASHING_THRESHOLD_DEFAULT = Integer.MAX_VALUE; // 大意是说是一个默认的阈值，当一个键值对的键是String类型时，且map的容量达到了这个阈值，就启用备用哈希（alternative hashing）。备用哈希可以减少String类型的key计算哈希码（更容易）发生哈希碰撞的发生率。该值可以通过定义系统属性jdk."/>
 
   
