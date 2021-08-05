@@ -460,9 +460,15 @@
 </li>
 </ul>
 <ol>
-<li>我们把原来的容量记为oldCapacity，新的容量记为newCapacity。因为newCapacity = oldCapacity * 2。
-2. 同一个key（其实就是同一个hash），在扩容后的map里的index的值，要么跟扩容前的map里的一样，要么是 扩容前的值 + oldCapacity。
-3. 原因是：newCapacity 与oldCapacity的二进制形式相比，1所在的位置比之前提前一位。则length - 1的值，差了一个1。举例最能说明问题：</li>
+<li>
+<p>我们把原来的容量记为oldCapacity，新的容量记为newCapacity。因为newCapacity = oldCapacity * 2。</p>
+</li>
+<li>
+<p>同一个key（其实就是同一个hash），在扩容后的map里的index的值，要么跟扩容前的map里的一样，要么是 扩容前的值 + oldCapacity。</p>
+</li>
+<li>
+<p>原因是：newCapacity 与oldCapacity的二进制形式相比，1所在的位置比之前提前一位。则length - 1的值，差了一个1。举例最能说明问题：</p>
+</li>
 </ol>
 </li>
 </ul>
@@ -1261,7 +1267,7 @@
 <li>同时跟第一步逻辑一样，找下一个有值的链表的头结点，如此循环往复，直到遍历结束。</li>
 </ol>
 <h3 id="参考资料">参考资料：</h3>
-<p><a href="%5Bhttps://www.bilibili.com/video/BV1x741117jq?t=2998&amp;p=2%5D(https://www.bilibili.com/video/BV1x741117jq?t=2998&amp;p=2)">详解hashMap-B站-鲁班学院-周瑜</a></p>
+<p><a href="https://www.bilibili.com/video/BV1x741117jq?t=2998&amp;p=2">详解hashMap-B站-鲁班学院-周瑜</a></p>
 
   
   </div>

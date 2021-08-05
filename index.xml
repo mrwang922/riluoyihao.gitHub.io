@@ -7,7 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>You</copyright>
-    <lastBuildDate>Sun, 01 Aug 2021 20:02:31 +0800</lastBuildDate><atom:link href="https://riluoyihao.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 05 Aug 2021 11:37:07 +0800</lastBuildDate><atom:link href="https://riluoyihao.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HashMap1.8</title>
+      <link>https://riluoyihao.github.io/post/hashmap1.8/</link>
+      <pubDate>Thu, 05 Aug 2021 11:37:07 +0800</pubDate>
+      
+      <guid>https://riluoyihao.github.io/post/hashmap1.8/</guid>
+      <description>HashMap 1.8 1. 与1.7的区别 hashMap1.8与1.7的区别主要有两点：
+ 由链表变成了链表加红黑树。 链表插入节点时，由头插法变成了尾插法。  原因是反正需要遍历整个链表是不是需要树化，所以直接用尾插法。    2. put方法 由于我们之前「HashMap1.7」已经详细说明了1.7的源码，而1.8与1.7又有很多相似之处，所以我们这里就不做太详细的分析，主要对不同之处做下详细分析。
+PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下《红黑树》
+1. put方法 1public V put(K key, V value) { 2 // 这里我们先直接看hash方法。 3 return putVal(hash(key), key, value, false, true); 4} 5 6static final int hash(Object key) { 7 int h; 8 // 这里其实有一个细节：key不能为空，因为为空的时候就会报错了（key.hashCode()）。 9 // 而我们应该知道，在1.7里key是可以为null的。 10 return (key == null) ? 0 : (h = key.hashCode()) ^ (h &amp;gt;&amp;gt;&amp;gt; 16); 11} 这里的hash方法其实比1.7的就简单多了，原因就是1.7中因为只有链表，所以为了提高查询的效率，必须尽量减少hash碰撞，所以做了很多位移等相关操作。而1.8之所以不用做这么的复杂处理是因为数据结构多了红黑树，本身查询效率就大大增加了，所以就不用耗费更多的CPU的资源来获取key的hash值了。</description>
+    </item>
+    
     <item>
       <title>HashMap1.7</title>
       <link>https://riluoyihao.github.io/post/hashmap1.7/</link>
