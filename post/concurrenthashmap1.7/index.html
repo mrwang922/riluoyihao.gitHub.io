@@ -15,8 +15,7 @@
   <meta name="googlebot" content="index,follow,snippet,archive">
   <meta property="og:title" content="ConcurrentHashMap1.7" />
 <meta property="og:description" content="ConcurrentHashMap 1.7 1.前言 concurrentHashMap是线程安全的。那么它如何实现了线程安全呢。这里主要依赖两方面：
- 在关键部分使用了unsafe。可以查看[https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」](https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」) 使用了分段锁。  1.1 如何保证并发安全的 主要利用Unsafe操作 &#43; ReentrantLock &#43; 分段思想。
-其中设计就到的Unsafe的操作主要有:
+ 在关键部分使用了unsafe。可以查看[「UNSAFE」](https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」) 使用了分段锁。  1.1 如何保证并发安全的 主要利用Unsafe操作 &#43; ReentrantLock &#43; 分段思想。 其中设计就到的Unsafe的操作主要有:
  compareAndSwapObject 通过cas的方式修改对象的属性。 putOrderedObject 并发安全得给数组的某个位置赋值。 getObjectVolatile 并发安全得获取数组某个位置的值。  分段思想是为了提高ConcurretHahsMap的并发量，分段数越高则支持的最大并发量越高，开发人员可以通过指定concurrentLevel参数来指定并发量。concurrentHashMap中的segment就是用来表示一个段的。 每个segment可以看作一个小型的hashMap，当调用concurrentHashMap的put方法时，最终会调用segment的put方法，而segment继承了ReentrantLock，所以segment自带可重入锁，当调用segment的put方法时，会先利用可重入锁加锁，加锁成功后再将待插入的k-v值插入到segment对应的table数组的具体位置，插入完成后解锁。
 1.2 先简单说下分段锁 concurrentHashMap的结构比照HashMap，可以看作多了一层。 最外一层的数组是ss（segment数组），每个segment对象又对应一个HashEntry数组。 可以简单看作下图，后续会详细分析。
 2.初始化方法 1public ConcurrentHashMap() { 2 this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL); 3} 4 5public ConcurrentHashMap(int initialCapacity) { 6 this(initialCapacity, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL); 7} 8 9public ConcurrentHashMap(int initialCapacity, float loadFactor) { 10 this(initialCapacity, loadFactor, DEFAULT_CONCURRENCY_LEVEL); 11} 12 13public ConcurrentHashMap(Map&lt;? extends K, ? extends V&gt; m) { 14 this(Math." />
@@ -29,8 +28,7 @@
   <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="ConcurrentHashMap1.7"/>
 <meta name="twitter:description" content="ConcurrentHashMap 1.7 1.前言 concurrentHashMap是线程安全的。那么它如何实现了线程安全呢。这里主要依赖两方面：
- 在关键部分使用了unsafe。可以查看[https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」](https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」) 使用了分段锁。  1.1 如何保证并发安全的 主要利用Unsafe操作 &#43; ReentrantLock &#43; 分段思想。
-其中设计就到的Unsafe的操作主要有:
+ 在关键部分使用了unsafe。可以查看[「UNSAFE」](https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」) 使用了分段锁。  1.1 如何保证并发安全的 主要利用Unsafe操作 &#43; ReentrantLock &#43; 分段思想。 其中设计就到的Unsafe的操作主要有:
  compareAndSwapObject 通过cas的方式修改对象的属性。 putOrderedObject 并发安全得给数组的某个位置赋值。 getObjectVolatile 并发安全得获取数组某个位置的值。  分段思想是为了提高ConcurretHahsMap的并发量，分段数越高则支持的最大并发量越高，开发人员可以通过指定concurrentLevel参数来指定并发量。concurrentHashMap中的segment就是用来表示一个段的。 每个segment可以看作一个小型的hashMap，当调用concurrentHashMap的put方法时，最终会调用segment的put方法，而segment继承了ReentrantLock，所以segment自带可重入锁，当调用segment的put方法时，会先利用可重入锁加锁，加锁成功后再将待插入的k-v值插入到segment对应的table数组的具体位置，插入完成后解锁。
 1.2 先简单说下分段锁 concurrentHashMap的结构比照HashMap，可以看作多了一层。 最外一层的数组是ss（segment数组），每个segment对象又对应一个HashEntry数组。 可以简单看作下图，后续会详细分析。
 2.初始化方法 1public ConcurrentHashMap() { 2 this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL); 3} 4 5public ConcurrentHashMap(int initialCapacity) { 6 this(initialCapacity, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL); 7} 8 9public ConcurrentHashMap(int initialCapacity, float loadFactor) { 10 this(initialCapacity, loadFactor, DEFAULT_CONCURRENCY_LEVEL); 11} 12 13public ConcurrentHashMap(Map&lt;? extends K, ? extends V&gt; m) { 14 this(Math."/>
@@ -101,12 +99,12 @@
 <h3 id="1前言">1.前言</h3>
 <p>concurrentHashMap是线程安全的。那么它如何实现了线程安全呢。这里主要依赖两方面：</p>
 <ol>
-<li>在关键部分使用了unsafe。可以查看[https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」](<a href="https://shimo.im/docs/9KXdpcPRCPcxDTTc/">https://shimo.im/docs/9KXdpcPRCPcxDTTc/</a> 「UNSAFE」)</li>
+<li>在关键部分使用了unsafe。可以查看[「UNSAFE」](<a href="https://shimo.im/docs/9KXdpcPRCPcxDTTc/">https://shimo.im/docs/9KXdpcPRCPcxDTTc/</a> 「UNSAFE」)</li>
 <li>使用了分段锁。</li>
 </ol>
 <h4 id="11-如何保证并发安全的">1.1 如何保证并发安全的</h4>
-<p>主要利用Unsafe操作 + ReentrantLock + 分段思想。</p>
-<p>其中设计就到的Unsafe的操作主要有:</p>
+<p>主要利用Unsafe操作 + ReentrantLock + 分段思想。
+其中设计就到的Unsafe的操作主要有:</p>
 <ol>
 <li>compareAndSwapObject 通过cas的方式修改对象的属性。</li>
 <li>putOrderedObject 并发安全得给数组的某个位置赋值。</li>

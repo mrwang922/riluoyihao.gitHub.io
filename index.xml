@@ -7,7 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>You</copyright>
-    <lastBuildDate>Thu, 05 Aug 2021 14:25:24 +0800</lastBuildDate><atom:link href="https://riluoyihao.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 05 Aug 2021 14:52:10 +0800</lastBuildDate><atom:link href="https://riluoyihao.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ConcurrentHashMap1.8</title>
+      <link>https://riluoyihao.github.io/post/concurrenthashmap1.8/</link>
+      <pubDate>Thu, 05 Aug 2021 14:52:10 +0800</pubDate>
+      
+      <guid>https://riluoyihao.github.io/post/concurrenthashmap1.8/</guid>
+      <description>ConcurrentHashMap 1.8 1. 前言 跟1.7比较的话，变化还是很大的。取消了分段锁。
+1.1 concurrentHashMap是如何保证并发安全的？ 主要是利用Unsafe操作 + synchronized关键字的。 Unsafe操作和1.7的类似，主要负责并发安全得修改对象的属性和数组中某个位置的值。 synchronized主要负责在需要操作某个位置时加锁（该位置不能为空），比如向某个位置的链表的头结点加锁，或者是给某个位置的树（TreeBin）加锁。 1.8 中仍然有分段锁的思想，只是1.7中段数是可控的。而1.8中是数组的每个位置都会加锁。
+2. 初始化方法 默认初始化方法非常简单，就是一个空参构造器。
+1public ConcurrentHashMap() { 2} 3.put方法 1public V put(K key, V value) { 2 return putVal(key, value, false); 3} 4 5final V putVal(K key, V value, boolean onlyIfAbsent) { 6 if (key == null || value == null) throw new NullPointerException(); 7 // 还是获取hash值。 8 int hash = spread(key.hashCode()); 9 int binCount = 0; 10 for (Node&amp;lt;K,V&amp;gt;[] tab = table;;) { 11 Node&amp;lt;K,V&amp;gt; f; int n, i, fh; 12 if (tab == null || (n = tab.</description>
+    </item>
+    
     <item>
       <title>ConcurrentHashMap1.7</title>
       <link>https://riluoyihao.github.io/post/concurrenthashmap1.7/</link>
@@ -15,8 +27,7 @@
       
       <guid>https://riluoyihao.github.io/post/concurrenthashmap1.7/</guid>
       <description>ConcurrentHashMap 1.7 1.前言 concurrentHashMap是线程安全的。那么它如何实现了线程安全呢。这里主要依赖两方面：
- 在关键部分使用了unsafe。可以查看[https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」](https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」) 使用了分段锁。  1.1 如何保证并发安全的 主要利用Unsafe操作 + ReentrantLock + 分段思想。
-其中设计就到的Unsafe的操作主要有:
+ 在关键部分使用了unsafe。可以查看[「UNSAFE」](https://shimo.im/docs/9KXdpcPRCPcxDTTc/ 「UNSAFE」) 使用了分段锁。  1.1 如何保证并发安全的 主要利用Unsafe操作 + ReentrantLock + 分段思想。 其中设计就到的Unsafe的操作主要有:
  compareAndSwapObject 通过cas的方式修改对象的属性。 putOrderedObject 并发安全得给数组的某个位置赋值。 getObjectVolatile 并发安全得获取数组某个位置的值。  分段思想是为了提高ConcurretHahsMap的并发量，分段数越高则支持的最大并发量越高，开发人员可以通过指定concurrentLevel参数来指定并发量。concurrentHashMap中的segment就是用来表示一个段的。 每个segment可以看作一个小型的hashMap，当调用concurrentHashMap的put方法时，最终会调用segment的put方法，而segment继承了ReentrantLock，所以segment自带可重入锁，当调用segment的put方法时，会先利用可重入锁加锁，加锁成功后再将待插入的k-v值插入到segment对应的table数组的具体位置，插入完成后解锁。
 1.2 先简单说下分段锁 concurrentHashMap的结构比照HashMap，可以看作多了一层。 最外一层的数组是ss（segment数组），每个segment对象又对应一个HashEntry数组。 可以简单看作下图，后续会详细分析。
 2.初始化方法 1public ConcurrentHashMap() { 2 this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL); 3} 4 5public ConcurrentHashMap(int initialCapacity) { 6 this(initialCapacity, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL); 7} 8 9public ConcurrentHashMap(int initialCapacity, float loadFactor) { 10 this(initialCapacity, loadFactor, DEFAULT_CONCURRENCY_LEVEL); 11} 12 13public ConcurrentHashMap(Map&amp;lt;? extends K, ? extends V&amp;gt; m) { 14 this(Math.</description>
