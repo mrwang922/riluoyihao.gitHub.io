@@ -15,8 +15,7 @@
   <meta name="googlebot" content="index,follow,snippet,archive">
   <meta property="og:title" content="HashMap1.8" />
 <meta property="og:description" content="HashMap 1.8 1. 与1.7的区别 hashMap1.8与1.7的区别主要有两点：
- 由链表变成了链表加红黑树。 链表插入节点时，由头插法变成了尾插法。  原因是反正需要遍历整个链表是不是需要树化，所以直接用尾插法。    2. put方法 由于我们之前「HashMap1.7」已经详细说明了1.7的源码，而1.8与1.7又有很多相似之处，所以我们这里就不做太详细的分析，主要对不同之处做下详细分析。
-PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下《红黑树》
+ 由链表变成了链表加红黑树。 链表插入节点时，由头插法变成了尾插法。  原因是反正需要遍历整个链表是不是需要树化，所以直接用尾插法。    2. put方法 由于我们之前「HashMap1.7」已经详细说明了1.7的源码，而1.8与1.7又有很多相似之处，所以我们这里就不做太详细的分析，主要对不同之处做下详细分析。 PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下《红黑树》
 1. put方法 1public V put(K key, V value) { 2 // 这里我们先直接看hash方法。 3 return putVal(hash(key), key, value, false, true); 4} 5 6static final int hash(Object key) { 7 int h; 8 // 这里其实有一个细节：key不能为空，因为为空的时候就会报错了（key.hashCode()）。 9 // 而我们应该知道，在1.7里key是可以为null的。 10 return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16); 11} 这里的hash方法其实比1.7的就简单多了，原因就是1.7中因为只有链表，所以为了提高查询的效率，必须尽量减少hash碰撞，所以做了很多位移等相关操作。而1.8之所以不用做这么的复杂处理是因为数据结构多了红黑树，本身查询效率就大大增加了，所以就不用耗费更多的CPU的资源来获取key的hash值了。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://riluoyihao.github.io/post/hashmap1.8/" /><meta property="article:section" content="post" />
@@ -27,8 +26,7 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
   <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="HashMap1.8"/>
 <meta name="twitter:description" content="HashMap 1.8 1. 与1.7的区别 hashMap1.8与1.7的区别主要有两点：
- 由链表变成了链表加红黑树。 链表插入节点时，由头插法变成了尾插法。  原因是反正需要遍历整个链表是不是需要树化，所以直接用尾插法。    2. put方法 由于我们之前「HashMap1.7」已经详细说明了1.7的源码，而1.8与1.7又有很多相似之处，所以我们这里就不做太详细的分析，主要对不同之处做下详细分析。
-PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下《红黑树》
+ 由链表变成了链表加红黑树。 链表插入节点时，由头插法变成了尾插法。  原因是反正需要遍历整个链表是不是需要树化，所以直接用尾插法。    2. put方法 由于我们之前「HashMap1.7」已经详细说明了1.7的源码，而1.8与1.7又有很多相似之处，所以我们这里就不做太详细的分析，主要对不同之处做下详细分析。 PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下《红黑树》
 1. put方法 1public V put(K key, V value) { 2 // 这里我们先直接看hash方法。 3 return putVal(hash(key), key, value, false, true); 4} 5 6static final int hash(Object key) { 7 int h; 8 // 这里其实有一个细节：key不能为空，因为为空的时候就会报错了（key.hashCode()）。 9 // 而我们应该知道，在1.7里key是可以为null的。 10 return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16); 11} 这里的hash方法其实比1.7的就简单多了，原因就是1.7中因为只有链表，所以为了提高查询的效率，必须尽量减少hash碰撞，所以做了很多位移等相关操作。而1.8之所以不用做这么的复杂处理是因为数据结构多了红黑树，本身查询效率就大大增加了，所以就不用耗费更多的CPU的资源来获取key的hash值了。"/>
 
   
@@ -105,8 +103,8 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 </li>
 </ol>
 <h3 id="2-put方法">2. put方法</h3>
-<p>由于我们之前<a href="https://riluoyihao.github.io/post/hashmap1.7/">「HashMap1.7」</a>已经详细说明了1.7的源码，而1.8与1.7又有很多相似之处，所以我们这里就不做太详细的分析，主要对不同之处做下详细分析。</p>
-<p>PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
+<p>由于我们之前<a href="https://riluoyihao.github.io/post/hashmap1.7/">「HashMap1.7」</a>已经详细说明了1.7的源码，而1.8与1.7又有很多相似之处，所以我们这里就不做太详细的分析，主要对不同之处做下详细分析。
+PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
 <h4 id="1-put方法">1. put方法</h4>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#8be9fd;font-style:italic">public</span> V <span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>K key<span style="color:#ff79c6">,</span> V value<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#6272a4">// 这里我们先直接看hash方法。
@@ -220,8 +218,8 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>    <span style="color:#ff79c6">}</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span style="color:#ff79c6">}</span>
 </code></pre></div><h5 id="2-final-void-treeifybinnodekv-tab-int-hash">2. final void treeifyBin(Node&lt;K,V&gt;[] tab, int hash)</h5>
-<p><strong>注意，这是TreeNode的方法。</strong></p>
-<p>这个方法的目的就是把链表树化。</p>
+<p><strong>注意，这是TreeNode的方法。</strong>
+这个方法的目的就是把链表树化。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#8be9fd;font-style:italic">final</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">treeifyBin</span><span style="color:#ff79c6">(</span>Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;[]</span> tab<span style="color:#ff79c6">,</span> <span style="color:#8be9fd">int</span> hash<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#8be9fd">int</span> n<span style="color:#ff79c6">,</span> index<span style="color:#ff79c6">;</span> Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> e<span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>tab <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">null</span> <span style="color:#ff79c6">||</span> <span style="color:#ff79c6">(</span>n <span style="color:#ff79c6">=</span> tab<span style="color:#ff79c6">.</span><span style="color:#50fa7b">length</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">&lt;</span> MIN_TREEIFY_CAPACITY<span style="color:#ff79c6">)</span>
@@ -366,8 +364,8 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9</span><span style="color:#ff79c6">}</span>
 </code></pre></div><p>System.identityHashCode方法的意思是忽略用户重写的hashCode方法，直接调用系统获取hashCode的方法获取hash值。</p>
 <h6 id="23-balanceinsertion">2.3 balanceInsertion</h6>
-<p><strong>注意，这是TreeNode的方法。</strong></p>
-<p>这部分就是红黑树的再平衡，可以参考<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
+<p><strong>注意，这是TreeNode的方法。</strong>
+这部分就是红黑树的再平衡，可以参考<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> <span style="color:#50fa7b">balanceInsertion</span><span style="color:#ff79c6">(</span>TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> root<span style="color:#ff79c6">,</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                                            TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> x<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    x<span style="color:#ff79c6">.</span><span style="color:#50fa7b">red</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span><span style="color:#ff79c6">;</span>
@@ -445,8 +443,8 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75</span>    <span style="color:#ff79c6">}</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76</span><span style="color:#ff79c6">}</span>
 </code></pre></div><h6 id="24-左旋">2.4 左旋</h6>
-<p><strong>注意，这是TreeNode的方法。</strong></p>
-<p>这部分就是红黑树的左旋，可以参考<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
+<p><strong>注意，这是TreeNode的方法。</strong>
+这部分就是红黑树的左旋，可以参考<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> <span style="color:#50fa7b">rotateLeft</span><span style="color:#ff79c6">(</span>TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> root<span style="color:#ff79c6">,</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                                      TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> r<span style="color:#ff79c6">,</span> pp<span style="color:#ff79c6">,</span> rl<span style="color:#ff79c6">;</span>
@@ -472,8 +470,8 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">return</span> root<span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span style="color:#ff79c6">}</span>
 </code></pre></div><h6 id="25-右旋">2.5 右旋</h6>
-<p><strong>注意，这是TreeNode的方法。</strong></p>
-<p>这部分就是红黑树的右旋，可以参考<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
+<p><strong>注意，这是TreeNode的方法。</strong>
+这部分就是红黑树的右旋，可以参考<a href="https://riluoyihao.github.io/post/%E7%BA%A2%E9%BB%91%E6%A0%91/">《红黑树》</a></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> <span style="color:#50fa7b">rotateRight</span><span style="color:#ff79c6">(</span>TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> root<span style="color:#ff79c6">,</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                                       TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> p<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> l<span style="color:#ff79c6">,</span> pp<span style="color:#ff79c6">,</span> lr<span style="color:#ff79c6">;</span>
@@ -499,8 +497,8 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">return</span> root<span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span style="color:#ff79c6">}</span>
 </code></pre></div><h6 id="26-moveroottofront">2.6 moveRootToFront</h6>
-<p><strong>注意，这是TreeNode的方法。</strong></p>
-<p>这个代码也很好理解，因为在把链表树化前（<em>查看 2. final void treeifyBin(Node&lt;K,V&gt;[] tab, int hash)</em>），维护了一个双向链表，在这里就是把root节点作为双向链表的头结点。</p>
+<p><strong>注意，这是TreeNode的方法。</strong>
+这个代码也很好理解，因为在把链表树化前（<em>查看 2. final void treeifyBin(Node&lt;K,V&gt;[] tab, int hash)</em>），维护了一个双向链表，在这里就是把root节点作为双向链表的头结点。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">moveRootToFront</span><span style="color:#ff79c6">(</span>Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;[]</span> tab<span style="color:#ff79c6">,</span> TreeNode<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> root<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#8be9fd">int</span> n<span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>root <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">null</span> <span style="color:#ff79c6">&amp;&amp;</span> tab <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">null</span> <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#ff79c6">(</span>n <span style="color:#ff79c6">=</span> tab<span style="color:#ff79c6">.</span><span style="color:#50fa7b">length</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">&gt;</span> 0<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
@@ -655,11 +653,11 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77</span>    <span style="color:#ff79c6">return</span> newTab<span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78</span><span style="color:#ff79c6">}</span>
 </code></pre></div><h4 id="41-扩容时链表的拆分">4.1 扩容时链表的拆分</h4>
-<p>首先说下理论基础，扩容后，同一个链表上的元素，最多只会出现在新的table表的两个位置：</p>
-<p>要么是原来的index的位置，要么是oldCapacity + index 的位置。</p>
-<p>具体原因可以查看**<em>2.4.2.1 transfer(newTable, false</em>)**处。</p>
-<p>所以这里的处理思路就是：把链表拆成两部分，一部分为”高位“，一部分为”低位“。</p>
-<p>然后直接把拆分后的链表整个移动到新的table。而在1.7里是一个一个移的。</p>
+<p>首先说下理论基础，扩容后，同一个链表上的元素，最多只会出现在新的table表的两个位置：
+要么是原来的index的位置，要么是oldCapacity + index 的位置。
+具体原因可以查看**<em>2.4.2.1 transfer(newTable, false</em>)**处。
+所以这里的处理思路就是：把链表拆成两部分，一部分为”高位“，一部分为”低位“。
+然后直接把拆分后的链表整个移动到新的table。而在1.7里是一个一个移的。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> loHead <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">,</span> loTail <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> hiHead <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">,</span> hiTail <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> next<span style="color:#ff79c6">;</span>
@@ -746,8 +744,8 @@ PS:这里需要说明下，因为1.8用到了红黑树，所以可以先看下�
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51</span>    <span style="color:#ff79c6">}</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52</span><span style="color:#ff79c6">}</span>
 </code></pre></div><h4 id="43-untreeify">4.3 untreeify</h4>
-<p>树的退化。</p>
-<p>很简单，就是把TreeNode再变成Node。</p>
+<p>树的退化。
+很简单，就是把TreeNode再变成Node。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#8be9fd;font-style:italic">final</span> Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> <span style="color:#50fa7b">untreeify</span><span style="color:#ff79c6">(</span>HashMap<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> map<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> hd <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">,</span> tl <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#ff79c6">for</span> <span style="color:#ff79c6">(</span>Node<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span>V<span style="color:#ff79c6">&gt;</span> q <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">this</span><span style="color:#ff79c6">;</span> q <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">;</span> q <span style="color:#ff79c6">=</span> q<span style="color:#ff79c6">.</span><span style="color:#50fa7b">next</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
